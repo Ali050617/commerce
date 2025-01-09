@@ -1,0 +1,10 @@
+<header class="header">
+    <div class="container">
+        <a href="{% url 'home' %}" class="logo">Acme Fashion</a>
+        <nav>
+            <a href="{% url 'category:category_list' %}" class="hover-lift">Categories</a>
+            <a href="{% url 'products:product_list' %}" class="hover-lift">Products</a>
+            <a href="{% url 'cart:cart_detail' %}" class="hover-lift">Cart</a>
+        </nav>
+    </div>
+</header>

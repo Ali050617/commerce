@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Basket - Acme Fashion Store{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Your Basket</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in cart.products.all %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>${{ product.price }}</td>
+            <td>
+                <form action="{% url 'cart:delete' cart.id product.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="1" min="1">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+            <td>${{ product.price }}</td>
+            <td>
+                <form action="{% url 'cart:delete' cart.id product.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p>Total: ${{ cart.total }}</p>
+    <a href="{% url 'checkout:checkout_create' %}" class="btn btn-primary">Proceed to Checkout</a>
+{% endblock %}

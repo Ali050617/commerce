@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if cart %}
+        Your Cart
+    {% elif category %}
+        {{ category.category_name }}
+    {% elif product %}
+        {{ product.name }}
+    {% elif checkout %}
+        Checkout #{{ checkout.pk }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if cart %}
+        <h1 class="page-title">Your Cart</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in cart.products.all %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>
+                        <form action="{% url 'cart_remove_product' cart.id product.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" min="1">
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                    <td>${{ product.price }}</td>
+                    <td>
+                        <form action="{% url 'cart_remove_product' cart.id product.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p>Total: ${{ cart.total }}</p>
+        <a href="{% url 'checkout_create' %}" class="btn btn-primary">Proceed to Checkout</a>
+
+    {% elif category %}
+        <h1 class="page-title">{{ category.category_name }}</h1>
+        <p>{{ category.description }}</p>
+
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p>${{ product.price }}</p>
+                <a href="{% url 'product_detail' product.created_at.year product.created_at.month product.created_at.day product.slug %}" class="btn btn-primary">View Details</a>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% elif product %}
+        <div class="product-detail">
+            <h1>{{ product.name }}</h1>
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            <p>{{ product.description }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <form action="{% url 'cart_create' cart.id product.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+        </div>
+
+    {% elif checkout %}
+        <h1 class="page-title">Checkout #{{ checkout.pk }}</h1>
+        <p>Name: {{ checkout.first_name }} {{ checkout.last_name }}</p>
+        <p>Email: {{ checkout.email }}</p>
+        <p>Address: {{ checkout.address }}, {{ checkout.city }}, {{ checkout.zip_code }}</p>
+
+        <h2>Ordered Products</h2>
+        <ul>
+            {% for product in checkout.products.all %}
+            <li>{{ product.name }} - ${{ product.price }}</li>
+            {% endfor %}
+        </ul>
+
+        <p>Total: ${{ checkout.total }}</p>
+    {% endif %}
+{% endblock %}
